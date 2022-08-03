@@ -61,44 +61,7 @@ services:
     depends_on:
       - node1
     environment:
-      - APP_NODE_URL=http://127.0.0.1:8503
+      - APP_NODE_URL=http://node1:8503
     ports:
     - 8001:80
-  db:
-    image: postgres:13.6
-    restart: always
-    container_name: 'postgres'
-    environment:
-        POSTGRES_PASSWORD: ''
-        POSTGRES_USER: 'postgres'
-        POSTGRES_HOST_AUTH_METHOD: 'trust'
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-    ports:
-      - 7432:5432
-
-  blockscout:
-    depends_on:
-      - db
-      - node1
-    image: blockscout/blockscout:latest
-    restart: always
-    container_name: 'blockscout'
-    links:
-      - db:database
-    command: 'mix do ecto.create, ecto.migrate, phx.server'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    env_file:
-      -  ./common.env
-    environment:
-        ETHEREUM_JSONRPC_VARIANT: 'geth'
-        BLOCK_TRANSFORMER: 'clique'
-        ETHEREUM_JSONRPC_HTTP_URL: http://node1:8503
-        ETHEREUM_JSONRPC_TRACE_URL: http://node1:8503
-        COIN: POA
-        DATABASE_URL: postgresql://postgres:@host.docker.internal:7432/blockscout?ssl=false
-        ECTO_USE_SSL: 'false'
-    ports:
-      - 4000:4000
-
+  
